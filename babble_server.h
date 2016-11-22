@@ -35,4 +35,7 @@ int notify_parse_error(command_t *cmd, char *input);
 /* High level comm function */
 int write_to_client(unsigned long key, int size, void* buf);
 
+void connection_listener(int* fd);
+void cmd_executor();
+
 #endif
