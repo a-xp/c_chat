@@ -11,7 +11,8 @@ SERVER_DEPS= 	babble_utils.c \
 		babble_communication.c \
 		babble_registration.c \
 		babble_publication_set.c \
-        thpool.c
+        thpool.c \
+        babble_commands.c
 
 # source files the client depends on
 CLIENT_DEPS= 	babble_communication.c  \

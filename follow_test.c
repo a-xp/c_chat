@@ -52,15 +52,23 @@ static void *publish_thread (void *arg)
         close(sockfd);
         exit(-1);
     }
-
+    int ret;
+    
     /* global barrier before starting to follow others */
-    int ret = pthread_barrier_wait(&global_barrier);
+    ret = pthread_barrier_wait(&global_barrier);
     if (ret != 0 && ret != PTHREAD_BARRIER_SERIAL_THREAD)
     {
         fprintf(stderr, "Barrier synchronization failed!\n");
         return (void*)EXIT_FAILURE;
     }
 
+    /* global barrier before starting to follow others */
+    ret = pthread_barrier_wait(&global_barrier);
+    if (ret != 0 && ret != PTHREAD_BARRIER_SERIAL_THREAD)
+    {
+        fprintf(stderr, "Barrier synchronization failed!\n");
+        return (void*)EXIT_FAILURE;
+    }
 
     /* continuously publishing msgs */
     char my_msg[BABBLE_SIZE];
@@ -126,9 +134,10 @@ static void *follow_thread (void *arg)
         close(sockfd);
         exit(-1);
     }
-
+    int ret;
+    
     /* global barrier before starting to follow others */
-    int ret = pthread_barrier_wait(&global_barrier);
+    ret = pthread_barrier_wait(&global_barrier);
     if (ret != 0 && ret != PTHREAD_BARRIER_SERIAL_THREAD)
     {
         fprintf(stderr, "Barrier synchronization failed!\n");
@@ -146,6 +155,13 @@ static void *follow_thread (void *arg)
         exit(-1);
     }
 
+    /* global barrier before starting to follow others */
+    ret = pthread_barrier_wait(&global_barrier);
+    if (ret != 0 && ret != PTHREAD_BARRIER_SERIAL_THREAD)
+    {
+        fprintf(stderr, "Barrier synchronization failed!\n");
+        return (void*)EXIT_FAILURE;
+    }
 
     /* timeline requests */
     int i=0;
@@ -248,7 +264,7 @@ int main(int argc, char *argv[])
         printf("Could not create a barrier\n");
         return -1;
     }
-
+    
     /* creating the publisher thread */
     if(pthread_create (&tid, NULL, publish_thread, NULL) != 0){
         fprintf(stderr,"WARNING: Failed to create comm thread\n");

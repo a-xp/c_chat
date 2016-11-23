@@ -21,5 +21,7 @@ int registration_insert(client_data_t* cl);
 /* remove client from the registration table */
 client_data_t* registration_remove(unsigned long key);
 
+int lock_client_data();
+void unlock_client_data();
 
 #endif

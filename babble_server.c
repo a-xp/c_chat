@@ -16,7 +16,8 @@
 #include "babble_communication.h"
 #include "thpool.h"
 
-threadpool connection_listeners_pool;
+threadpool conn_workers_pool;
+threadpool cmd_workers_pool;
 
 static void display_help(char *exec)
 {
@@ -27,7 +28,7 @@ int main(int argc, char *argv[])
 {
     int sockfd, newsockfd;
     int portno=BABBLE_PORT;
-    
+
     int opt;
     int nb_args=1;
 
@@ -51,7 +52,8 @@ int main(int argc, char *argv[])
     }
 
     server_data_init();    
-    connection_listeners_pool = thpool_init(20);
+    conn_workers_pool = thpool_init(BABBLE_COMMUNICATION_THREADS);
+    cmd_workers_pool = thpool_init(BABBLE_EXECUTOR_THREADS);
 
     if((sockfd = server_connection_init(portno)) == -1){
         return -1;
@@ -65,7 +67,9 @@ int main(int argc, char *argv[])
         if((newsockfd= server_connection_accept(sockfd))==-1){
             return -1;
         }
-        thpool_add_work(connection_listeners_pool, (void*)connection_listener, &newsockfd);        
+        session_t* newsession = (session_t *)malloc(sizeof(session_t));
+        newsession->handle = newsockfd;
+        thpool_add_work(conn_workers_pool, (void*)connection_listener, newsession);        
     }
     close(sockfd);
     return 0;

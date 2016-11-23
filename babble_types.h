@@ -22,6 +22,9 @@ typedef struct answer{
     struct answer *next;
 } answer_t;
 
+typedef struct session{
+    int handle;
+} session_t;
 
 typedef struct answer_set{
     answer_t *aset;
