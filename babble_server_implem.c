@@ -14,7 +14,7 @@
 #include "babble_types.h"
 #include "babble_communication.h"
 #include "babble_registration.h"
-#include "thpool.h"
+#include "thread_pool.h"
 #include "babble_commands.h"
 
 time_t server_start;
@@ -362,7 +362,7 @@ void connection_listener(session_t* sess)
             free(cmd);
         }
         else{
-            thpool_add_work(cmd_workers_pool, (void*)cmd_executor, cmd); 
+            thread_pool_submit(cmd_workers_pool, (void*)cmd_executor, cmd); 
         }
         free(recv_buff);
     }

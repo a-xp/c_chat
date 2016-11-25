@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #include "babble_types.h"
-#include "thpool.h"
+#include "thread_pool.h"
 
 /* used to create a timeline of publications*/
 typedef struct timeline_item{
@@ -17,8 +17,8 @@ typedef struct timeline_item{
 extern time_t server_start;
 
 /* io threads pools */
-extern threadpool conn_workers_pool;
-extern threadpool cmd_workers_pool;
+extern thread_pool_t* conn_workers_pool;
+extern thread_pool_t* cmd_workers_pool;
 
 /* Init functions*/
 void server_data_init(void);

@@ -14,10 +14,10 @@
 #include "babble_types.h"
 #include "babble_utils.h"
 #include "babble_communication.h"
-#include "thpool.h"
+#include "thread_pool.h"
 
-threadpool conn_workers_pool;
-threadpool cmd_workers_pool;
+thread_pool_t* conn_workers_pool;
+thread_pool_t* cmd_workers_pool;
 
 static void display_help(char *exec)
 {
@@ -50,10 +50,10 @@ int main(int argc, char *argv[])
         display_help(argv[0]);
         return -1;
     }
-
+   
     server_data_init();    
-    conn_workers_pool = thpool_init(BABBLE_COMMUNICATION_THREADS);
-    cmd_workers_pool = thpool_init(BABBLE_EXECUTOR_THREADS);
+    conn_workers_pool = thread_pool_create(BABBLE_COMMUNICATION_THREADS);
+    cmd_workers_pool = thread_pool_create(BABBLE_EXECUTOR_THREADS);
 
     if((sockfd = server_connection_init(portno)) == -1){
         return -1;
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
         }
         session_t* newsession = (session_t *)malloc(sizeof(session_t));
         newsession->handle = newsockfd;
-        thpool_add_work(conn_workers_pool, (void*)connection_listener, newsession);        
+        thread_pool_submit(conn_workers_pool, (void*)connection_listener, newsession);        
     }
     close(sockfd);
     return 0;
