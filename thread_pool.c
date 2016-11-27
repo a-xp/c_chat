@@ -55,6 +55,7 @@ static void worker_run(thread_pool_t* pool_ptr)
             task_cb = task_ptr->callback;
             param  = task_ptr->param;
             task_cb(param);
+            free(task_ptr);
         }
     }
 }
